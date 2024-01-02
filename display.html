@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .nft-image {
+      height: 300px;
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NFT collection name</h1>
+  <select name="list" id="list"> xyz
+    <!-- <option value="">demo1</option>
+    <option value="">demo2</option>
+    <option value="">demo3</option> -->
+  </select>
+  <div id="musicList"></div>
+  <div>
+    <button id="downloadButton">Download</button>
+  </div>
+  <audio id="audioPlayer" controls></audio>
+  <script>
+    // Create an array to store metadata
+    const metadataArray = [];
+
+    // Replacce with the actual IPFS CID
+    const ipfsCID = "QmUPaF5JTyTSRzCGS8v2xJrm5xrcxkaf5T5MKgMp3A9hqs";
+
+    // Construct the IPFS gateway URL
+    const ipfsGatewayURL = `https://gateway.ipfs.io/ipfs/${ipfsCID}`;
+
+    // Fetch metadata from IPFS
+    fetch(ipfsGatewayURL)
+      .then(response => response.json())
+      .then(metadata => {
+        // Store the fetched metadata in the array
+        metadataArray.push(metadata);
+        console.log("Metadata stored:", metadata);
+
+        const musicList = document.getElementById("musicList");
+        const audioPlayer = document.getElementById("audioPlayer");
+
+        // Display music NFTs and set up click event for audio player
+        metadataArray.forEach(nft => {
+          const nftItemDiv = document.createElement('div');
+
+          // Get the ipfs CID
+          const ipfsImageCID = nft.image;
+          const ipfsAudioCID = nft.animation_url;
+
+          // Construct the ipfs image URL
+          const ipfsImageURL = `https://ipfs.io/ipfs/${ipfsImageCID}`;
+          const ipfsAudioURL = `https://ipfs.io/ipfs/${ipfsAudioCID}`;
+
+          // Create an <img> element and set its attribute
+          const nftImageElement = document.createElement('img');
+          nftImageElement.src = ipfsImageURL;
+          nftImageElement.alt = nft.name;
+          nftImageElement.classList.add('nft-image');
+          nftImageElement.addEventListener('click', () => {
+            playAudio(ipfsAudioURL);
+          })
+          nftItemDiv.appendChild(nftImageElement);
+
+          const nftName = document.createElement('p');
+          nftName.textContent = `Name: ${nft.name}`;
+          nftItemDiv.appendChild(nftName);
+
+          const description = document.createElement('p');
+          description.textContent = `Description: ${nft.description}`;
+          nftItemDiv.appendChild(description);
+          musicList.appendChild(nftItemDiv);
+
+          // Display attributes
+          nft.attributes.forEach(attribute => {
+            const attributeDiv = document.createElement('div');
+            attributeDiv.classList.add('attribute');
+
+            const traitTypeParagraph = document.createElement('p');
+            traitTypeParagraph.textContent = `${attribute['trait_type']}: ${attribute.value}`;
+
+            attributeDiv.appendChild(traitTypeParagraph);
+            musicList.appendChild(attributeDiv);
+          });
+
+          // Download the audio file
+          document.getElementById("downloadButton").addEventListener("click", async() => {
+            try{
+              // Create a temporary link element to trigger the download
+              const link = document.createElement("a");
+              link.href = ipfsAudioURL;
+              link.target = "_blank";
+              link.click();
+            } catch (error) {
+              console.error("Error downloading file:", error);
+            }
+          });
+        });
+        
+
+        // Function to play audio
+        function playAudio(audioURL) {
+            audioPlayer.src = audioURL;
+            audioPlayer.play();
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching metadata:", error);
+      });
+
+  </script>
+  <script>
+    const list = document.getElementById("list");
+    
+    for(let i=0; i<5; i++) {
+      const dropdown = document.createElement('option');
+      dropdown.textContent = i;
+      list.appendChild(dropdown);
+    }
+    
+  </script>
+</body>
+</html>
