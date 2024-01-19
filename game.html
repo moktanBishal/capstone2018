@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Card Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .card {
+      width: 80px;
+      height: 120px;
+      background-color: #3498db;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 8px;
+      cursor: pointer;
+      font-size: 24px;
+      color: #ecf0f1;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-board"></div>
+
+  <script>
+    // Shuffle function to randomize the order of cards
+    function shuffle(array) {
+      let currentIndex = array.length, randomIndex;
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
+    }
+
+    // Create an array with card symbols
+    const symbols = ['♠', '♥', '♦', '♣'];
+
+    // Duplicate the symbols to create pairs
+    const cardPairs = symbols.concat(symbols);
+
+    // Shuffle the card pairs
+    const shuffledPairs = shuffle(cardPairs);
+
+    // Create the game board
+    const gameBoard = document.getElementById('game-board');
+
+    shuffledPairs.forEach((symbol, index) => {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.setAttribute('data-symbol', symbol);
+      card.setAttribute('data-index', index);
+      card.textContent = symbol;
+      card.addEventListener('click', flipCard);
+      gameBoard.appendChild(card);
+    });
+
+    let selectedCards = [];
+    let matchedPairs = 0;
+
+    // Function to handle card flip
+    function flipCard() {
+      const card = this;
+      selectedCards.push(card);
+
+      if (selectedCards.length === 2) {
+        setTimeout(checkMatch, 500);
+      }
+    }
+
+    // Function to check if selected cards match
+    function checkMatch() {
+      const [card1, card2] = selectedCards;
+
+      if (card1.getAttribute('data-symbol') === card2.getAttribute('data-symbol')) {
+        // Match found
+        card1.removeEventListener('click', flipCard);
+        card2.removeEventListener('click', flipCard);
+        matchedPairs++;
+
+        if (matchedPairs === symbols.length) {
+          alert('Congratulations! You matched all pairs.');
+        }
+      } else {
+        // No match, flip cards back
+        card1.textContent = '';
+        card2.textContent = '';
+      }
+
+      selectedCards = [];
+    }
+  </script>
+
+</body>
+</html>
