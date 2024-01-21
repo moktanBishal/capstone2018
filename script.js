@@ -6,8 +6,8 @@ const ctx = canvas.getContext('2d');
 const WIDTH = 500;
 const HEIGHT = 800;
 const BIG_CIRCLE_RADIUS = 200;
-const SMALL_CIRCLE_RADIUS = 20;
-const ANGULAR_SPEED = 0.05;
+const SMALL_CIRCLE_RADIUS = 8;
+const ANGULAR_SPEED = 0.0008;
 
 function calculateColorGradient() {
     const gradient = ctx.createRadialGradient(BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS, 0, BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS);
@@ -34,8 +34,8 @@ function draw() {
     ctx.fill();
 
     // Calculate the positions of three small circles moving in a big circle with smooth transition
-    for (let i = 0; i < 3; i++) {
-        const currentAngle = (Math.PI * 2 / 3) * i + angle;
+    for (let i = 0; i < 4; i++) {
+        const currentAngle = (Math.PI * 2 / 8) * i + angle;
         const x = centerX + BIG_CIRCLE_RADIUS * Math.cos(currentAngle);
         const y = centerY + BIG_CIRCLE_RADIUS * Math.sin(currentAngle);
 
