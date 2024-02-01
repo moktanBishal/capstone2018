@@ -1,61 +1,80 @@
-// script.js
+let deck2 = [13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 
+  9, 10, 11, 12, 13,1, 2, 3, 4, 5, 6, 7, 8, 
+  5, 6, 7, 8, 9, 1, 2, 3, 11, 12, 13, 4, 10,
+  1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+for (let k = 0; k < 4; k++) {
+  // Shuffle the deck of cards using Fisher-Yates algorithm
+  for (let i = deck2.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck2[i], deck2[j]] = [deck2[j], deck2[i]];
+  }
 
-const WIDTH = 500;
-const HEIGHT = 800;
-const BIG_CIRCLE_RADIUS = 200;
-const SMALL_CIRCLE_RADIUS = 8;
-const ANGULAR_SPEED = 0.0008;
-
-function calculateColorGradient() {
-    const gradient = ctx.createRadialGradient(BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS, 0, BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS, BIG_CIRCLE_RADIUS);
-    
-    for (let i = 0; i <= BIG_CIRCLE_RADIUS; i++) {
-        const alpha = i / BIG_CIRCLE_RADIUS;
-        gradient.addColorStop(alpha, `rgba(255, 255, 255, ${alpha})`);
-    }
-    
-    return gradient;
 }
 
-function draw() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+const game = document.getElementById("game");
 
-    // Calculate the center coordinates
-    const centerX = WIDTH / 2;
-    const centerY = HEIGHT / 2;
+const pickedCard = document.createElement('h3');
 
-    // Draw the big circle with color gradient at the center
-    ctx.fillStyle = calculateColorGradient();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, BIG_CIRCLE_RADIUS, 0, Math.PI * 2);
-    ctx.fill();
+// Pick a random card from the shuffled deck
+let pickedIndex = Math.floor(Math.random() * deck2.length);
+let picked = deck2[pickedIndex];
 
-    // Calculate the positions of three small circles moving in a big circle with smooth transition
-    for (let i = 0; i < 4; i++) {
-        const currentAngle = (Math.PI * 2 / 8) * i + angle;
-        const x = centerX + BIG_CIRCLE_RADIUS * Math.cos(currentAngle);
-        const y = centerY + BIG_CIRCLE_RADIUS * Math.sin(currentAngle);
+pickedCard.textContent = `You picked ${picked}`;
+game.appendChild(pickedCard);
 
-        // Change the color of the small circle based on the angle
-        const color = `rgb(${Math.floor(255 * (1 + Math.sin(angle * 2)) / 2)}, ${Math.floor(255 * (1 + Math.cos(angle * 2)) / 2)}, ${Math.floor(255 * (1 - Math.sin(angle * 2)) / 2)})`;
+console.log(`Deck: ${deck2}`);
+console.log(`You picked ${picked} which has index of ${pickedIndex}`);
+deck2.splice(pickedIndex,1);
+// Rearrange the deck in a new array
+let deck = deck2.slice(pickedIndex).concat(deck2.slice(0, pickedIndex));
+console.log(`Deck: ${deck.length}`);
 
-        // Draw the small circle with varying size based on a sinusoidal function
-        const size = SMALL_CIRCLE_RADIUS + 3 * Math.sin(angle * 2);
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-    }
+const test = document.createElement('p');
+test.textContent = `Deck: ${deck2.slice(pickedIndex).concat(deck2.slice(0, pickedIndex))}`;
+game.appendChild(test);
 
-    // Update the angle over time
-    angle += ANGULAR_SPEED;
+// Split the deck into two arrays, a and b
+let a = [];
+let b = [];
 
-    requestAnimationFrame(draw);
+for (let i = 0; i < deck.length; i++) {
+  i % 2 === 0 ? a.push(deck[i]) : b.push(deck[i]);
 }
 
-let angle = 0;
-draw();
+// Initialize the index counter
+let k = 0;
 
+// Use setInterval for a delayed loop with 1-second intervals
+const intervalId = setInterval(() => {
+  const round = document.getElementById("round");
+  const result = document.getElementById("result");
+
+  const play = document.createElement('p');
+  const winner = document.createElement('h3');
+  if (k < deck.length) {
+    play.innerHTML = `<h5>Round ${k+1}</h5>  ${a[k]} vs ${b[k]}`;
+    round.appendChild(play);
+    console.log(`${a[k]} vs ${b[k]}`);
+    // Check if the picked card matches with player A's card
+    if (picked === a[k]) {
+      winner.textContent = `A wins!`;
+      result.appendChild(winner);
+      console.log(`A wins!`);
+      clearInterval(intervalId); // Stop the interval when A wins
+    }
+    // Check if the picked card matches with player B's card
+    else if (picked === b[k]) {
+      winner.textContent = `B wins!`;
+      result.appendChild(winner);
+      console.log(`B wins!`);
+      clearInterval(intervalId); // Stop the interval when B wins
+    }
+    k++;
+  } else {
+    winner.textContent = `No winner in this round.`;
+    result.appendChild(winner);
+    console.log("No winner in this round.");
+    clearInterval(intervalId); // Stop the interval when the loop completes
+  }
+}, 1500); // Delay each iteration by 1 second
