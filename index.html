@@ -4,12 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Game</title>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+    }
+
+    #game {
+      text-align: center;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #round {
+      margin-top: 20px;
+    }
+
+    h3 {
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
   <h2>Cardpatti</h2>
+  
+  <div id="player">
+    <select id="tokenHolder"></select>
+  </div>
+
   <div id="game"></div>
   <div id="round"></div>
-  <div id="result"></div>
-  <script src="script.js"></script>
+  
+  <script src="./script.js"></script>
 </body>
 </html>
